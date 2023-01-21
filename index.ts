@@ -5,8 +5,9 @@ import 'dotenv/config';
 
 import authRoutes from './src/routes/auth.route';
 import userRoutes from './src/routes/user.route';
+import fileRoutes from './src/routes/file.route';
 import { HOST, ORIGIN, PORT } from './src/configs/common';
-import { AUTHOR_GITHUB, AUTH_BASE_URL, USER_BASE_URL } from './src/constants/route';
+import { AUTHOR_GITHUB, AUTH_BASE_URL, FILE_BASE_URL, USER_BASE_URL } from './src/constants/route';
 import { globalErrorHandling, handle404 } from './src/helpers/error';
 import { DB_CONFIG } from './src/configs/db';
 
@@ -28,6 +29,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use(AUTH_BASE_URL, authRoutes);
 
 app.use(USER_BASE_URL, userRoutes);
+
+app.use(FILE_BASE_URL, fileRoutes);
 
 app.use('*', handle404);
 

@@ -1,12 +1,14 @@
 export const HTTP = {
+	SUCCESS: 200,
+	CREATED: 201,
 	BAD_REQUEST: 400,
-	NOT_FOUND: 404,
 	UNAUTHORIZED: 401,
 	FORBIDDEN: 403,
+	NOT_FOUND: 404,
+	CONFLICT: 409,
 	INTERNAL_SERVER_ERROR: 500,
-	SUCCESS: 200,
-	CREATED: 201
-};
+	SERVICE_UNAVAILABLE: 503
+} as const;
 
 export const ERROR_CODES = {
 	BAD_REQUEST: 'bad_request',
@@ -19,5 +21,8 @@ export const ERROR_CODES = {
 	EMAIL_NOT_FOUND: 'email_not_found',
 	DEDUPE_EMAIL: 'email_exists',
 	INVALID_EMAIL: 'invalid_email',
-	INVALID_PASSWORD: 'invalid_password'
-};
+	INVALID_PASSWORD: 'invalid_password',
+	INSUFFICIENT_FILE_DATA: 'insufficient_file_data',
+	FILE_UPLOAD_FAILED: 'file_upload_failed',
+	DEDUPE_FILE: 'file_exists'
+} as const;
