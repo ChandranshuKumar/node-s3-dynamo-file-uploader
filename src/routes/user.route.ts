@@ -3,8 +3,8 @@ import { GET_USER_ENDPOINT } from '../constants/route';
 import { getUser } from '../controllers/user.controller';
 import checkAuth from '../middlewares/checkAuth';
 
-const router = express.Router();
+const userRoutes = express.Router();
 
-router.get(GET_USER_ENDPOINT, checkAuth, getUser);
+userRoutes.get(GET_USER_ENDPOINT, checkAuth, getUser);
 
-export default router;
+export default userRoutes;

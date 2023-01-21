@@ -1,13 +1,13 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, Document } from 'mongoose';
 
-export type IUser = {
+export interface IUser extends Document {
 	email: string;
 	password: string;
 	isVerified: boolean;
 	createdAt: Date;
-};
+}
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema({
 	email: {
 		type: String,
 		required: true,
