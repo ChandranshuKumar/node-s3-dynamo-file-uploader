@@ -4,6 +4,7 @@ import { ERROR_CODES, HTTP } from '../constants/codesAndStatuses';
 import { constructErrorResponse, constructSuccessResponse } from '../helpers/response';
 import { AWS_CONFIG } from '../configs/aws';
 import Files from '../models/File';
+import User from '../models/User';
 
 const s3 = new AWS.S3({
 	accessKeyId: AWS_CONFIG.ACCESS_KEY,
@@ -12,9 +13,22 @@ const s3 = new AWS.S3({
 
 export const uploadFile = async (req: Request, res: Response, next: NextFunction) => {
 	try {
+		const currentUserId = res.locals.userId ?? '';
+		const currentUser = await User.findById(currentUserId);
+		if (!currentUser) {
+			res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.USER_NOT_FOUND));
+			return;
+		}
+
 		const { name = '', type = '', size = null, encoding = 'base64', blob = '' } = req.body;
 		if (!name || !type || !encoding || !blob) {
 			res.status(HTTP.BAD_REQUEST).json(constructErrorResponse(ERROR_CODES.INSUFFICIENT_FILE_DATA));
+			return;
+		}
+
+		const dedupeFile = await Files.findOne({ name });
+		if (dedupeFile) {
+			res.status(HTTP.CONFLICT).json(constructErrorResponse(ERROR_CODES.DEDUPE_FILE));
 			return;
 		}
 
@@ -34,17 +48,11 @@ export const uploadFile = async (req: Request, res: Response, next: NextFunction
 				return;
 			}
 
-			const ETag = data.ETag.replace(/['"]+/g, '');
-			const dedupeFile = await Files.findOne({ e_tag: ETag });
-			if (dedupeFile) {
-				res.status(HTTP.CONFLICT).json(constructErrorResponse(ERROR_CODES.DEDUPE_FILE));
-				return;
-			}
-
 			const file = new Files({
+				owner: currentUser._id,
 				name: data.Key,
-				e_tag: ETag,
 				s3_url: data.Location,
+				s3_e_tag: data.ETag.replace(/['"]+/g, ''),
 				type,
 				size,
 				encoding
@@ -59,6 +67,49 @@ export const uploadFile = async (req: Request, res: Response, next: NextFunction
 				})
 			);
 			return;
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+export const deleteFile = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const currentUserId = res.locals.userId ?? '';
+		const currentUser = await User.findById(currentUserId);
+		if (!currentUser) {
+			res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.USER_NOT_FOUND));
+			return;
+		}
+
+		const { id: fileId = '' } = req.params;
+		if (!fileId) {
+			res.status(HTTP.BAD_REQUEST).json(constructErrorResponse(ERROR_CODES.INVALID_FILE_ID));
+			return;
+		}
+
+		const file = await Files.findById(fileId);
+		if (!file || file.deleted_at) {
+			res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.FILE_NOT_FOUND));
+			return;
+		}
+
+		const params: AWS.S3.Types.DeleteObjectRequest = {
+			Bucket: AWS_CONFIG.FILE_UPLOAD_BUCKET,
+			Key: file.name
+		};
+
+		s3.deleteObject(params, async (err) => {
+			if (err) {
+				res
+					.status(HTTP.SERVICE_UNAVAILABLE)
+					.json(constructErrorResponse(ERROR_CODES.FILE_DELETE_FAILED));
+				return;
+			}
+
+			file.deleted_at = new Date();
+			await file.save();
+			res.send(HTTP.SUCCESS).json(constructSuccessResponse());
 		});
 	} catch (err) {
 		next(err);

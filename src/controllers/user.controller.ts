@@ -16,7 +16,7 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
 				user: {
 					id: currentUser._id,
 					email: currentUser.email,
-					isVerified: currentUser.isVerified
+					is_verified: currentUser.is_verified
 				}
 			})
 		);

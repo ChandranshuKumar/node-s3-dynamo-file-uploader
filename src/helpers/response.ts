@@ -8,7 +8,7 @@ export const constructErrorResponse = (code: string, message?: string) => {
 	};
 };
 
-export const constructSuccessResponse = (data: unknown) => {
+export const constructSuccessResponse = (data?: unknown) => {
 	return {
 		success: true,
 		...(data ? { data } : {})

@@ -8,5 +8,6 @@ export const LOGIN_ENDPOINT = '/login';
 export const GET_USER_ENDPOINT = '/me';
 
 export const UPLOAD_FILE_ENDPOINT = '/upload';
+export const DELETE_FILE_ENDPOINT = '/:id';
 
 export const AUTHOR_GITHUB = 'https://github.com/ChandranshuKumar';

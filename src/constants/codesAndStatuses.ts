@@ -24,5 +24,8 @@ export const ERROR_CODES = {
 	INVALID_PASSWORD: 'invalid_password',
 	INSUFFICIENT_FILE_DATA: 'insufficient_file_data',
 	FILE_UPLOAD_FAILED: 'file_upload_failed',
-	DEDUPE_FILE: 'file_exists'
+	DEDUPE_FILE: 'file_exists',
+	INVALID_FILE_ID: 'invalid_file_id',
+	FILE_NOT_FOUND: 'file_not_found',
+	FILE_DELETE_FAILED: 'file_delete_failed'
 } as const;
