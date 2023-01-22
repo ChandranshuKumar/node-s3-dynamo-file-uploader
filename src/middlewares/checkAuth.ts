@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ERROR_CODES, HTTP } from '../constants/codesAndStatuses';
 import { constructErrorResponse } from '../helpers/response';
+import User from '../models/User';
 import { verifyJwtToken } from '../utils/token.util';
 
 const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +24,13 @@ const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
 			return;
 		}
 
-		res.locals.userId = userId;
+		const currentUser = await User.findById(userId);
+		if (!currentUser) {
+			res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.USER_NOT_FOUND));
+			return;
+		}
+
+		res.locals.user = currentUser;
 		next();
 	} catch (err) {
 		next(err);
