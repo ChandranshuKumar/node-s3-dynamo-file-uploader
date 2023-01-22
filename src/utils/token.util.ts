@@ -7,7 +7,7 @@ type UserPayload = {
 
 type CustomJwtPayload = UserPayload & (JwtPayload | string);
 
-const THIRY_MINUTES_EXPIRY = Math.floor(Date.now() / 1000 + 60 * 30);
+const THIRY_MINUTES_EXPIRY = Math.floor((Date.now() / 1000) + (60 * 30));
 
 export const createJwtToken = (payload: UserPayload) => {
 	return sign(payload, JWT_SECRET, { expiresIn: THIRY_MINUTES_EXPIRY, algorithm: 'HS256' });
