@@ -4,7 +4,7 @@ import { Err } from '../interfaces/common';
 import { constructErrorResponse } from './response';
 
 export const handle404 = (req: Request, res: Response) => {
-	res.send(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.NOT_FOUND));
+	res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.NOT_FOUND));
 	return;
 };
 

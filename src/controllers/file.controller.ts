@@ -102,7 +102,7 @@ export const deleteFile = async (req: Request, res: Response, next: NextFunction
 
 			file.deleted_at = new Date();
 			await file.save();
-			res.send(HTTP.SUCCESS).json(constructSuccessResponse());
+			res.status(HTTP.SUCCESS).json(constructSuccessResponse());
 		});
 	} catch (err) {
 		next(err);
@@ -149,7 +149,7 @@ export const getAllFiles = async (req: Request, res: Response, next: NextFunctio
 		const files = await Files.find({ uploaded_by: currentUser._id });
 
 		if (!files) {
-			res.send(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.FILES_NOT_FOUND));
+			res.status(HTTP.NOT_FOUND).json(constructErrorResponse(ERROR_CODES.FILES_NOT_FOUND));
 			return;
 		}
 
